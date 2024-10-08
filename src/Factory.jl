@@ -10,6 +10,7 @@ function _build(edgemodel::Type{MyGraphEdgeModel}, parts::Array{String,1}, id::I
     model.cost = parse(Float64, parts[3]);
     model.lower_bound_capacity = parse(Float64, parts[4]);
     model.upper_bound_capacity = parse(Float64, parts[5]);
+    #commit to main
 
     # return -
     return model
