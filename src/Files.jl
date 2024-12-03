@@ -66,7 +66,60 @@ function readnodecapacityfile(filepath::String; comment::Char='#',
     capacities = Dict{Int64,Tuple{Int64,Int64}}()
     
     # TODO: implement this function
-    throw("The readnodecapacityfile function is not implemented yet.");
+    function readnodecapacityfile(filepath::String; comment::Char='#', delim::Char=',')::Dict{Int64, Tuple{Int64, Int64}}
+        # Initialize an empty dictionary to store node capacities
+        node_capacities = Dict{Int64, Tuple{Int64, Int64}}()
+    
+        # Check if file exists
+        if !isfile(filepath)
+            throw(ArgumentError("File not found: $filepath"))
+        end
+    
+        # Open and read the file
+        try
+            open(filepath, "r") do file
+                for line in eachline(file)
+                    # Trim whitespace
+                    line = strip(line)
+    
+                    # Skip empty lines and comments
+                    if isempty(line) || startswith(line, comment)
+                        continue
+                    end
+    
+                    # Split the line
+                    parts = split(line, delim)
+    
+                    # Validate the line has correct number of parts
+                    if length(parts) != 3
+                        throw(ArgumentError("Invalid line format: $line"))
+                    end
+    
+                    # Parse node ID and capacities
+                    try
+                        node_id = parse(Int64, parts[1])
+                        in_degree_capacity = parse(Int64, parts[2])
+                        out_degree_capacity = parse(Int64, parts[3])
+    
+                        # Store in the dictionary
+                        node_capacities[node_id] = (in_degree_capacity, out_degree_capacity)
+                    catch e
+                        throw(ArgumentError("Error parsing line: $line. $(e.msg)"))
+                    end
+                end
+            end
+        catch e
+            throw(ArgumentError("Error reading file: $(e.msg)"))
+        end
+    
+        # Validate that we have capacities
+        if isempty(node_capacities)
+            throw(ArgumentError("No node capacities found in the file"))
+        end
+    
+        return node_capacities
+    end
+    
 
     # return -
     return capacities;
